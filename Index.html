@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Aplikasi — SDN 2 Karangmangu</title>
+  <style>
+    :root {
+      --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      --font-mono: "Consolas", "Courier New", monospace;
+      --bg:       #0e1117;
+      --surface:  #161b27;
+      --surface2: #1e2538;
+      --border:   rgba(255,255,255,0.07);
+      --border2:  rgba(255,255,255,0.13);
+      --text:     #e8eaf0;
+      --muted:    #6b7280;
+      --muted2:   #9ca3af;
+      --radius: 16px;
+      --rad-sm: 10px;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none; z-index: 0;
+    }
+    .page {
+      position: relative; z-index: 1;
+      max-width: 900px; margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+    .header {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 40px;
+      animation: fadeUp .4s ease both;
+    }
+    .header__logo {
+      width: 52px; height: 52px; border-radius: 50%;
+      overflow: hidden; border: 2px solid var(--border2);
+      background: var(--surface2); flex-shrink: 0;
+      display: flex; align-items:center; justify-content:center; font-size: 22px;
+    }
+    .header__logo img { width:100%; height:100%; object-fit:cover; display:block; }
+    .header__title { font-size:20px; font-weight:700; color:var(--text); letter-spacing:-.3px; }
+    .header__sub   { font-size:13px; color:var(--muted); margin-top:2px; }
+    .header__time  {
+      margin-left: auto; text-align: right;
+      font-family: var(--font-mono); font-size:13px; color:var(--muted2); line-height:1.5; flex-shrink:0;
+    }
+    .section-label {
+      font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+      color:var(--muted); margin-bottom:14px; animation: fadeUp .4s .1s ease both;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px; margin-bottom: 32px;
+    }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px 18px 18px;
+      cursor: pointer; text-decoration: none;
+      display: flex; flex-direction: column; gap: 12px;
+      position: relative; overflow: hidden;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+      animation: fadeUp .4s ease both;
+    }
+    .card:hover { transform:translateY(-3px); border-color:var(--border2); box-shadow:0 12px 32px rgba(0,0,0,0.4); }
+    .card:active { transform:translateY(0); }
+    .card::before {
+      content:''; position:absolute; top:-20px; left:-20px;
+      width:80px; height:80px; border-radius:50%;
+      background:var(--clr,#3b82f6); opacity:.12; filter:blur(20px);
+      pointer-events:none; transition:opacity .18s;
+    }
+    .card:hover::before { opacity:.22; }
+    .card::after {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      background:var(--clr,#3b82f6); border-radius:var(--radius) var(--radius) 0 0;
+    }
+    .card__icon {
+      width:40px; height:40px; border-radius:10px;
+      background:color-mix(in srgb,var(--clr,#3b82f6) 15%,transparent);
+      display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;
+    }
+    .card__name  { font-size:15px; font-weight:600; color:var(--text); line-height:1.3; }
+    .card__desc  { font-size:11.5px; color:var(--muted); line-height:1.5; flex:1; }
+    .card__arrow { font-size:16px; color:var(--muted); align-self:flex-end; transition:transform .18s,color .18s; }
+    .card:hover .card__arrow { transform:translateX(3px); color:var(--clr,#3b82f6); }
+    .card:nth-child(1){animation-delay:.05s}.card:nth-child(2){animation-delay:.10s}
+    .card:nth-child(3){animation-delay:.15s}.card:nth-child(4){animation-delay:.20s}
+    .card:nth-child(5){animation-delay:.25s}.card:nth-child(6){animation-delay:.30s}
+
+    /* Edit mode */
+    .card__actions { position:absolute; top:10px; right:10px; display:none; gap:4px; }
+    .edit-mode .card__actions { display:flex; }
+    .card__act-btn {
+      width:26px; height:26px; border-radius:6px; border:1px solid var(--border2);
+      background:var(--surface2); color:var(--muted2); font-size:13px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; transition:background .12s,color .12s;
+    }
+    .card__act-btn:hover { background:var(--surface); color:var(--text); }
+    .card__act-btn.del:hover { background:#3f1f1f; color:#ef4444; border-color:rgba(239,68,68,.3); }
+
+    /* Actions bar */
+    .actions-bar {
+      display:flex; align-items:center; gap:10px; margin-bottom:24px;
+      animation: fadeUp .4s .3s ease both;
+    }
+    .btn-add {
+      display:inline-flex; align-items:center; gap:8px;
+      background:var(--surface); border:1px dashed var(--border2);
+      border-radius:var(--rad-sm); padding:10px 18px;
+      font-size:13px; font-weight:500; color:var(--muted2); cursor:pointer;
+      transition:background .15s,border-color .15s,color .15s;
+    }
+    .btn-add:hover { background:var(--surface2); border-color:rgba(255,255,255,.25); color:var(--text); }
+    .btn-sm {
+      display:inline-flex; align-items:center; gap:6px;
+      background:transparent; border:1px solid var(--border);
+      border-radius:var(--rad-sm); padding:10px 14px;
+      font-family:var(--font); font-size:12px; font-weight:500;
+      color:var(--muted); cursor:pointer;
+      transition:background .12s,border-color .12s,color .12s;
+    }
+    .btn-sm:hover, .btn-sm.active { background:var(--surface2); border-color:var(--border2); color:var(--text); }
+    /* Export button */
+    .btn-export {
+      display:inline-flex; align-items:center; gap:6px;
+      background:transparent; border:1px solid rgba(59,130,246,.35);
+      border-radius:var(--rad-sm); padding:10px 14px;
+      font-family:var(--font); font-size:12px; font-weight:600;
+      color:#3b82f6; cursor:pointer;
+      transition:background .12s,border-color .12s;
+      margin-left:auto;
+    }
+    .btn-export:hover { background:rgba(59,130,246,.1); border-color:rgba(59,130,246,.6); }
+
+    /* Toast */
+    .toast {
+      position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(80px);
+      background:#1e2538; border:1px solid var(--border2); border-radius:10px;
+      padding:10px 20px; font-size:13px; color:var(--text);
+      box-shadow:0 8px 24px rgba(0,0,0,.4); pointer-events:none;
+      transition:transform .25s ease, opacity .25s ease; opacity:0; z-index:999;
+      white-space:nowrap;
+    }
+    .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+    /* Modal */
+    .overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,.65);
+      backdrop-filter:blur(4px); z-index:100;
+      display:none; place-items:center; padding:20px;
+    }
+    .overlay.open { display:grid; }
+    .modal {
+      background:var(--surface); border:1px solid var(--border2);
+      border-radius:var(--radius); padding:28px 24px 24px;
+      width:100%; max-width:400px;
+      box-shadow:0 24px 64px rgba(0,0,0,.6);
+      animation:modalIn .2s ease;
+    }
+    @keyframes modalIn { from{opacity:0;transform:scale(.95) translateY(8px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    .modal__title { font-size:16px; font-weight:700; margin-bottom:20px; color:var(--text); }
+    .form-row { margin-bottom:14px; }
+    .form-label { display:block; font-size:11px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+    .form-input {
+      width:100%; padding:10px 13px;
+      background:var(--bg); border:1.5px solid var(--border2);
+      border-radius:var(--rad-sm); font-family:var(--font); font-size:14px; color:var(--text);
+      outline:none; transition:border-color .12s,box-shadow .12s;
+    }
+    .form-input:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.15); }
+    .form-input::placeholder { color:var(--muted); }
+    .color-grid { display:flex; gap:8px; flex-wrap:wrap; }
+    .color-opt {
+      width:28px; height:28px; border-radius:50%;
+      border:2px solid transparent; cursor:pointer; transition:transform .12s,border-color .12s;
+    }
+    .color-opt:hover { transform:scale(1.15); }
+    .color-opt.selected { border-color:white; transform:scale(1.15); }
+    .icon-grid { display:flex; gap:6px; flex-wrap:wrap; }
+    .icon-opt {
+      width:36px; height:36px; border-radius:8px; border:1.5px solid var(--border2);
+      cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px;
+      transition:background .12s,border-color .12s;
+    }
+    .icon-opt:hover { background:var(--surface2); }
+    .icon-opt.selected { background:var(--surface2); border-color:rgba(255,255,255,.35); }
+    .modal__actions { display:flex; gap:10px; margin-top:20px; }
+    .btn {
+      flex:1; padding:10px; border-radius:var(--rad-sm);
+      font-family:var(--font); font-size:14px; font-weight:600;
+      cursor:pointer; border:none; transition:opacity .12s,transform .1s;
+    }
+    .btn:active { transform:scale(.97); }
+    .btn--primary { background:#3b82f6; color:#fff; }
+    .btn--ghost { background:transparent; border:1.5px solid var(--border2); color:var(--muted2); }
+    .btn--ghost:hover { border-color:rgba(255,255,255,.25); color:var(--text); }
+    .footer { text-align:center; font-size:11px; color:var(--muted); padding:4px 0; animation:fadeUp .4s .4s ease both; }
+    .footer a { color:#3b82f6; text-decoration:none; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @media(max-width:480px){
+      body{padding:0} .page{padding:24px 16px 48px;}
+      .header__time{display:none} .grid{grid-template-columns:1fr 1fr}
+      .btn-export span { display:none }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="header__logo">
+      <img src="https://drive.google.com/thumbnail?id=1_4hX041lJ1f5qRD5rRHZirP-35BcNWv1&sz=w120"
+        alt="Logo" width="52" height="52" decoding="async" onerror="this.style.display='none'">
+    </div>
+    <div>
+      <div class="header__title">Portal Aplikasi</div>
+      <div class="header__sub">SDN 2 Karangmangu</div>
+    </div>
+    <div class="header__time" id="htime"></div>
+  </div>
+
+  <div class="section-label">Aplikasi Tersedia</div>
+  <div class="grid" id="grid"></div>
+
+  <div class="actions-bar">
+    <button class="btn-add" onclick="openModal()">＋ Tambah Aplikasi</button>
+    <button class="btn-sm" id="btnEdit" onclick="toggleEdit()">✎ Atur</button>
+    <button class="btn-export" onclick="exportFile()" title="Download HTML terbaru untuk di-upload ke GitHub">
+      ⬇ <span>Export HTML</span>
+    </button>
+  </div>
+
+  <div class="footer">
+    Developed &amp; maintained by <strong>Doni Yan Ariyanto</strong>
+    &mdash; <a href="mailto:doni.yan27@gmail.com">doni.yan27@gmail.com</a>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal__title" id="modalTitle">Tambah Aplikasi</div>
+    <div class="form-row">
+      <label class="form-label">Nama Aplikasi</label>
+      <input class="form-input" id="fName" placeholder="contoh: Perpustakaan" maxlength="30">
+    </div>
+    <div class="form-row">
+      <label class="form-label">URL / Link</label>
+      <input class="form-input" id="fUrl" placeholder="https://..." type="url">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Deskripsi singkat</label>
+      <input class="form-input" id="fDesc" placeholder="opsional" maxlength="60">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Ikon</label>
+      <div class="icon-grid" id="iconGrid"></div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Warna</label>
+      <div class="color-grid" id="colorGrid"></div>
+    </div>
+    <div class="modal__actions">
+      <button class="btn btn--ghost" onclick="closeModal()">Batal</button>
+      <button class="btn btn--primary" id="btnSave" onclick="saveApp()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  var ICONS  = ['📋','📊','📝','🌐','📚','🏆','📅','🔔','👥','📁','🖥️','🎯','📌','🧪','🎨','📢'];
+  var COLORS = ['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#ec4899','#84cc16','#f97316','#14b8a6','#a855f7','#64748b'];
+
+  // ── DATA — edit langsung di sini jika perlu, atau pakai tombol di UI ──
+  var apps = [
+    { id:1, name:'Absensi',        url:'', desc:'Presensi harian siswa',    icon:'📋', color:'#3b82f6' },
+    { id:2, name:'Nilai',          url:'', desc:'Manajemen nilai & rapor',  icon:'📊', color:'#10b981' },
+    { id:3, name:'Ujian',          url:'', desc:'Pelaksanaan ujian online', icon:'📝', color:'#f59e0b' },
+    { id:4, name:'Website Sekolah',url:'', desc:'Portal informasi sekolah', icon:'🌐', color:'#8b5cf6' }
+  ];
+  // ─────────────────────────────────────────────────────────────────────
+
+  var editMode  = false;
+  var editingId = null;
+  var selIcon   = ICONS[0];
+  var selColor  = COLORS[0];
+
+  // Jam
+  var DAYS   = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+  var MONTHS = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  function tick() {
+    var n = new Date();
+    document.getElementById('htime').innerHTML =
+      '<span style="font-size:18px;font-weight:700;letter-spacing:1px">' +
+      String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0') +
+      '</span><br>' + DAYS[n.getDay()]+', '+n.getDate()+' '+MONTHS[n.getMonth()]+' '+n.getFullYear();
+  }
+  tick(); setInterval(tick, 1000);
+
+  // Render
+  function render() {
+    var grid = document.getElementById('grid');
+    grid.innerHTML = '';
+    apps.forEach(function(app, i) {
+      var card = document.createElement('a');
+      card.className = 'card';
+      card.style.setProperty('--clr', app.color);
+      card.style.animationDelay = (i*.05+.05)+'s';
+      if (app.url) { card.href = app.url; card.target = '_blank'; card.rel = 'noopener'; }
+      else { card.href='#'; card.addEventListener('click', function(e){ if(!editMode){e.preventDefault();promptUrl(app);} }); }
+      card.innerHTML =
+        '<div class="card__icon">'+app.icon+'</div>'+
+        '<div><div class="card__name">'+esc(app.name)+'</div>'+(app.desc?'<div class="card__desc">'+esc(app.desc)+'</div>':'')+'</div>'+
+        '<div class="card__arrow">→</div>'+
+        '<div class="card__actions">'+
+          '<button class="card__act-btn" title="Edit" onclick="editApp(event,'+app.id+')">✎</button>'+
+          '<button class="card__act-btn del" title="Hapus" onclick="deleteApp(event,'+app.id+')">✕</button>'+
+        '</div>';
+      grid.appendChild(card);
+    });
+    grid.classList.toggle('edit-mode', editMode);
+  }
+
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function promptUrl(app) {
+    var url = prompt('Masukkan URL untuk "'+app.name+'":', app.url||'https://');
+    if (url===null) return;
+    url = url.trim();
+    if (url) { app.url=url; render(); }
+  }
+
+  function toggleEdit() {
+    editMode = !editMode;
+    var btn = document.getElementById('btnEdit');
+    btn.classList.toggle('active', editMode);
+    btn.textContent = editMode ? '✓ Selesai' : '✎ Atur';
+    render();
+  }
+
+  // Modal
+  function buildIconGrid(sel) {
+    var g = document.getElementById('iconGrid'); g.innerHTML='';
+    ICONS.forEach(function(ic){
+      var el=document.createElement('div');
+      el.className='icon-opt'+(ic===sel?' selected':'');
+      el.textContent=ic; el.onclick=function(){selIcon=ic;buildIconGrid(ic);};
+      g.appendChild(el);
+    });
+  }
+  function buildColorGrid(sel) {
+    var g = document.getElementById('colorGrid'); g.innerHTML='';
+    COLORS.forEach(function(c){
+      var el=document.createElement('div');
+      el.className='color-opt'+(c===sel?' selected':'');
+      el.style.background=c;
+      el.onclick=function(){selColor=c;buildColorGrid(c);document.getElementById('btnSave').style.background=c;};
+      g.appendChild(el);
+    });
+  }
+  function openModal(app) {
+    editingId=app?app.id:null; selIcon=app?app.icon:ICONS[0]; selColor=app?app.color:COLORS[0];
+    document.getElementById('modalTitle').textContent=app?'Edit Aplikasi':'Tambah Aplikasi';
+    document.getElementById('fName').value=app?app.name:'';
+    document.getElementById('fUrl').value=app?app.url:'';
+    document.getElementById('fDesc').value=app?app.desc:'';
+    document.getElementById('btnSave').style.background=selColor;
+    buildIconGrid(selIcon); buildColorGrid(selColor);
+    document.getElementById('overlay').classList.add('open');
+    setTimeout(function(){document.getElementById('fName').focus();},60);
+  }
+  function closeModal() { document.getElementById('overlay').classList.remove('open'); editingId=null; }
+  function overlayClick(e){ if(e.target===document.getElementById('overlay'))closeModal(); }
+
+  function saveApp() {
+    var name=document.getElementById('fName').value.trim();
+    var url=document.getElementById('fUrl').value.trim();
+    var desc=document.getElementById('fDesc').value.trim();
+    if(!name){document.getElementById('fName').focus();return;}
+    if(editingId!==null){
+      var app=apps.find(function(a){return a.id===editingId;});
+      if(app){app.name=name;app.url=url;app.desc=desc;app.icon=selIcon;app.color=selColor;}
+    } else {
+      apps.push({id:Date.now(),name:name,url:url,desc:desc,icon:selIcon,color:selColor});
+    }
+    render(); closeModal();
+  }
+  function editApp(e,id){ e.preventDefault();e.stopPropagation(); var a=apps.find(function(x){return x.id===id;}); if(a)openModal(a); }
+  function deleteApp(e,id){
+    e.preventDefault();e.stopPropagation();
+    var a=apps.find(function(x){return x.id===id;}); if(!a||!confirm('Hapus "'+a.name+'"?'))return;
+    apps=apps.filter(function(x){return x.id!==id;}); render();
+  }
+
+  // ── Export HTML ────────────────────────────────────────
+  function exportFile() {
+    // Ambil source HTML halaman ini, lalu ganti blok var apps = [...] dengan data terkini
+    var src = document.documentElement.outerHTML;
+
+    // Buat JSON data terkini (rapi, 2 spasi)
+    var json = JSON.stringify(apps, null, 4)
+      .replace(/</g,'\\u003c').replace(/>/g,'\\u003e'); // escape < > agar aman di dalam <script>
+
+    // Ganti blok "var apps = [...];" dengan yang baru
+    // Regex: cocokkan dari "var apps = [" sampai "];" berikutnya di level teratas
+    src = src.replace(/var apps\s*=\s*\[[\s\S]*?\];\s*\/\/ ─+/,
+      'var apps = ' + json + ';\n  // ─────────────────────────────────────────────────────────────────────');
+
+    var blob = new Blob([src], {type:'text/html;charset=utf-8'});
+    var a    = document.createElement('a');
+    a.href   = URL.createObjectURL(blob);
+    a.download = 'dashboard.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('✓ File dashboard.html berhasil diunduh');
+  }
+
+  // Toast
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show');}, 3000);
+  }
+
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape')closeModal();
+    if(e.key==='Enter'&&document.getElementById('overlay').classList.contains('open')){
+      if(document.activeElement.tagName!=='BUTTON')saveApp();
+    }
+  });
+
+  render();
+</script>
+</body>
+</html>
