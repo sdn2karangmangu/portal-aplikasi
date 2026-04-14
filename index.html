@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
+<html lang="id"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal Aplikasi — SDN 2 Karangmangu</title>
@@ -218,23 +216,22 @@
       .btn-export span { display:none }
     }
   </style>
-</head>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&amp;display=swap" rel="stylesheet"></head>
 <body>
 <div class="page">
   <div class="header">
     <div class="header__logo">
-      <img src="https://drive.google.com/thumbnail?id=1_4hX041lJ1f5qRD5rRHZirP-35BcNWv1&sz=w120"
-        alt="Logo" width="52" height="52" decoding="async" onerror="this.style.display='none'">
+      <img src="https://drive.google.com/thumbnail?id=1_4hX041lJ1f5qRD5rRHZirP-35BcNWv1&amp;sz=w120" alt="Logo" width="52" height="52" decoding="async" onerror="this.style.display='none'">
     </div>
     <div>
       <div class="header__title">Portal Aplikasi</div>
       <div class="header__sub">SDN 2 Karangmangu</div>
     </div>
-    <div class="header__time" id="htime"></div>
+    <div class="header__time" id="htime"><span style="font-size:18px;font-weight:700;letter-spacing:1px">11:45:55</span><br>Sel, 14 Apr 2026</div>
   </div>
 
   <div class="section-label">Aplikasi Tersedia</div>
-  <div class="grid" id="grid"></div>
+  <div class="grid" id="grid"><a class="card" href="#" style="--clr: #3b82f6; animation-delay: 0.05s;"><div class="card__icon">📋</div><div><div class="card__name">Absensi</div><div class="card__desc">Presensi harian siswa</div></div><div class="card__arrow">→</div><div class="card__actions"><button class="card__act-btn" title="Edit" onclick="editApp(event,1)">✎</button><button class="card__act-btn del" title="Hapus" onclick="deleteApp(event,1)">✕</button></div></a><a class="card" href="#" style="--clr: #10b981; animation-delay: 0.1s;"><div class="card__icon">📊</div><div><div class="card__name">Nilai</div><div class="card__desc">Manajemen nilai &amp; rapor</div></div><div class="card__arrow">→</div><div class="card__actions"><button class="card__act-btn" title="Edit" onclick="editApp(event,2)">✎</button><button class="card__act-btn del" title="Hapus" onclick="deleteApp(event,2)">✕</button></div></a><a class="card" href="#" style="--clr: #f59e0b; animation-delay: 0.15s;"><div class="card__icon">📝</div><div><div class="card__name">Ujian</div><div class="card__desc">Pelaksanaan ujian online</div></div><div class="card__arrow">→</div><div class="card__actions"><button class="card__act-btn" title="Edit" onclick="editApp(event,3)">✎</button><button class="card__act-btn del" title="Hapus" onclick="deleteApp(event,3)">✕</button></div></a><a class="card" href="#" style="--clr: #8b5cf6; animation-delay: 0.2s;"><div class="card__icon">🌐</div><div><div class="card__name">Website Sekolah</div><div class="card__desc">Portal informasi sekolah</div></div><div class="card__arrow">→</div><div class="card__actions"><button class="card__act-btn" title="Edit" onclick="editApp(event,4)">✎</button><button class="card__act-btn del" title="Hapus" onclick="deleteApp(event,4)">✕</button></div></a><a class="card" href="#" style="--clr: #ef4444; animation-delay: 0.25s;"><div class="card__icon">📚</div><div><div class="card__name">Perpustakaan</div><div class="card__desc">aplikasi manajemen perpustakaan</div></div><div class="card__arrow">→</div><div class="card__actions"><button class="card__act-btn" title="Edit" onclick="editApp(event,1776141915004)">✎</button><button class="card__act-btn del" title="Hapus" onclick="deleteApp(event,1776141915004)">✕</button></div></a><a class="card" href="#" style="--clr: #f97316; animation-delay: 0.3s;"><div class="card__icon">📝</div><div><div class="card__name">PPDB</div><div class="card__desc">Penerimaan Peserta Didik Baru</div></div><div class="card__arrow">→</div><div class="card__actions"><button class="card__act-btn" title="Edit" onclick="editApp(event,1776141950852)">✎</button><button class="card__act-btn del" title="Hapus" onclick="deleteApp(event,1776141950852)">✕</button></div></a></div>
 
   <div class="actions-bar">
     <button class="btn-add" onclick="openModal()">＋ Tambah Aplikasi</button>
@@ -246,7 +243,7 @@
 
   <div class="footer">
     Developed &amp; maintained by <strong>Doni Yan Ariyanto/Rumah koding Rembang</strong>
-    &mdash; <a href="mailto:doni.yan27@gmail.com">doni.yan27@gmail.com</a>
+    — <a href="mailto:doni.yan27@gmail.com">doni.yan27@gmail.com</a>
   </div>
 </div>
 
@@ -268,15 +265,15 @@
     </div>
     <div class="form-row">
       <label class="form-label">Ikon</label>
-      <div class="icon-grid" id="iconGrid"></div>
+      <div class="icon-grid" id="iconGrid"><div class="icon-opt">📋</div><div class="icon-opt">📊</div><div class="icon-opt selected">📝</div><div class="icon-opt">🌐</div><div class="icon-opt">📚</div><div class="icon-opt">🏆</div><div class="icon-opt">📅</div><div class="icon-opt">🔔</div><div class="icon-opt">👥</div><div class="icon-opt">📁</div><div class="icon-opt">🖥️</div><div class="icon-opt">🎯</div><div class="icon-opt">📌</div><div class="icon-opt">🧪</div><div class="icon-opt">🎨</div><div class="icon-opt">📢</div></div>
     </div>
     <div class="form-row">
       <label class="form-label">Warna</label>
-      <div class="color-grid" id="colorGrid"></div>
+      <div class="color-grid" id="colorGrid"><div class="color-opt" style="background: rgb(59, 130, 246);"></div><div class="color-opt" style="background: rgb(16, 185, 129);"></div><div class="color-opt" style="background: rgb(245, 158, 11);"></div><div class="color-opt" style="background: rgb(139, 92, 246);"></div><div class="color-opt" style="background: rgb(239, 68, 68);"></div><div class="color-opt" style="background: rgb(6, 182, 212);"></div><div class="color-opt" style="background: rgb(236, 72, 153);"></div><div class="color-opt" style="background: rgb(132, 204, 22);"></div><div class="color-opt selected" style="background: rgb(249, 115, 22);"></div><div class="color-opt" style="background: rgb(20, 184, 166);"></div><div class="color-opt" style="background: rgb(168, 85, 247);"></div><div class="color-opt" style="background: rgb(100, 116, 139);"></div></div>
     </div>
     <div class="modal__actions">
       <button class="btn btn--ghost" onclick="closeModal()">Batal</button>
-      <button class="btn btn--primary" id="btnSave" onclick="saveApp()">Simpan</button>
+      <button class="btn btn--primary" id="btnSave" onclick="saveApp()" style="background: rgb(249, 115, 22);">Simpan</button>
     </div>
   </div>
 </div>
@@ -289,11 +286,55 @@
 
   // ── DATA — edit langsung di sini jika perlu, atau pakai tombol di UI ──
   var apps = [
-    { id:1, name:'Absensi',        url:'', desc:'Presensi harian siswa',    icon:'📋', color:'#3b82f6' },
-    { id:2, name:'Nilai',          url:'', desc:'Manajemen nilai & rapor',  icon:'📊', color:'#10b981' },
-    { id:3, name:'Ujian',          url:'', desc:'Pelaksanaan ujian online', icon:'📝', color:'#f59e0b' },
-    { id:4, name:'Website Sekolah',url:'', desc:'Portal informasi sekolah', icon:'🌐', color:'#8b5cf6' }
-  ];
+    {
+        "id": 1,
+        "name": "Absensi",
+        "url": "",
+        "desc": "Presensi harian siswa",
+        "icon": "📋",
+        "color": "#3b82f6"
+    },
+    {
+        "id": 2,
+        "name": "Nilai",
+        "url": "",
+        "desc": "Manajemen nilai & rapor",
+        "icon": "📊",
+        "color": "#10b981"
+    },
+    {
+        "id": 3,
+        "name": "Ujian",
+        "url": "",
+        "desc": "Pelaksanaan ujian online",
+        "icon": "📝",
+        "color": "#f59e0b"
+    },
+    {
+        "id": 4,
+        "name": "Website Sekolah",
+        "url": "",
+        "desc": "Portal informasi sekolah",
+        "icon": "🌐",
+        "color": "#8b5cf6"
+    },
+    {
+        "id": 1776141915004,
+        "name": "Perpustakaan",
+        "url": "",
+        "desc": "aplikasi manajemen perpustakaan",
+        "icon": "📚",
+        "color": "#ef4444"
+    },
+    {
+        "id": 1776141950852,
+        "name": "PPDB",
+        "url": "",
+        "desc": "Penerimaan Peserta Didik Baru",
+        "icon": "📝",
+        "color": "#f97316"
+    }
+];
   // ─────────────────────────────────────────────────────────────────────
 
   var editMode  = false;
@@ -447,5 +488,6 @@
 
   render();
 </script>
-</body>
-</html>
+
+
+</body><div></div></html>
